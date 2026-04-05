@@ -1,8 +1,10 @@
 # APC Modbus/SNMP Debug Collector
 
-`collector.py` is a debugging and fingerprinting tool for APC devices.
+`collector.py` is a standalone copy of the diagnostics collector used in
+`../apc-modbus-ha/custom_components/apc_modbus/diagnostic_collector.py`.
+This repository is intentionally standalone and versioned independently.
 
-It probes a small set of:
+It probes:
 - SNMP OIDs
 - Modbus register blocks
 
@@ -29,8 +31,10 @@ python3 collector.py --community public 192.168.1.10
 ## Output
 
 The script emits JSON with:
-- `snmp`: raw SNMP responses for APC UPS and Rack PDU identity probes
-- `modbus`: raw Modbus block responses, parsed registers, and structured errors
+- `snmp`: OID, value/error per probe
+- `modbus`: raw Modbus block responses, parsed registers, structured errors, and
+  quick/identity decodes where available
+- redaction applied to host/IP, community string, and serial-like fields
 
 Errors are both human- and machine-readable. Example:
 
@@ -51,3 +55,7 @@ Errors are both human- and machine-readable. Example:
 - Unsupported SNMP OIDs and Modbus exception codes are part of the device fingerprint.
 - Some APC devices return ASCII identity data in Modbus blocks that are numeric telemetry on other models.
 - The raw dump is more trustworthy than any guessed high-level interpretation.
+
+## Release
+
+Current release: `v1.0.1`
