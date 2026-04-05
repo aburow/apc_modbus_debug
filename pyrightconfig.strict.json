@@ -1,7 +1,0 @@
-{
-  "include": [
-    "collector.py"
-  ],
-  "typeCheckingMode": "strict",
-  "reportMissingImports": "error"
-}

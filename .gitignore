@@ -4,3 +4,12 @@ __pycache__/
 .ruff_cache/
 *.pyc
 .codex
+
+# Purged non-essential repository content
+docs/
+tests/
+semgrep/
+.pylintrc
+pyrightconfig.strict.json
+pytest.ini
+ruff.toml
