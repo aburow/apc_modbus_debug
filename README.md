@@ -28,12 +28,24 @@ Example:
 python3 collector.py --community public 192.168.1.10
 ```
 
+To include a full SNMP walk of `1.3.6.1`, add `--full-snmp`:
+
+```bash
+python3 collector.py --full-snmp --community public 192.168.1.10
+```
+
 ## Output
 
 The script emits JSON with:
 - `snmp`: OID, value/error per probe
+- `snmp_full`: optional full SNMP walk output from `1.3.6.1`
+- `detection`: likely device type from SNMP and Modbus probe results
+- `external_probe_detection` and `external_probe_data`: detected external sensor
+  OIDs and parsed values, if available
 - `modbus`: raw Modbus block responses, parsed registers, structured errors, and
   quick/identity decodes where available
+- `modbus_tcp_idle_probe`: staged Modbus TCP idle checks at 5, 10, 30, and 60
+  seconds, with progress messages printed while the probe runs
 - redaction applied to host/IP, community string, and serial-like fields
 
 Errors are both human- and machine-readable. Example:
