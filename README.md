@@ -132,4 +132,4 @@ Errors are both human- and machine-readable. Example:
 
 ## Release
 
-Current release: `v1.0.1`
+Current release: `v1.1.0`
