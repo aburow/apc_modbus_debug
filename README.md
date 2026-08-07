@@ -101,7 +101,7 @@ pytest -q test
 The script emits JSON with:
 - `snmp`: OID, value/error per probe
 - `snmp_full`: optional full SNMP walk output from `1.3.6.1`
-- `detection`: definitive device type only when Modbus schema probes agree
+- `detection`: definitive device type (`smt_ups`, `smart_ups`, `rack_pdu`, or `smartconnect_ups`) only when Modbus schema probes agree
 - `modbus_probes`: exact schema probe responses and protocol/transport outcome
 - `modbus_pacing`: tested connection modes and the selected request delay
 - `transport`: connection mode, effective delay, and whether it was manual or diagnosed
@@ -132,4 +132,4 @@ Errors are both human- and machine-readable. Example:
 
 ## Release
 
-Current release: `v1.1.0`
+Current release: `v1.2.0`

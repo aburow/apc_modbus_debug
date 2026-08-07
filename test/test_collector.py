@@ -10,6 +10,20 @@ def exception() -> dict[str, object]:
     return {"parsed": {"error": {"code": "modbus_exception", "exception_code": 2}}}
 
 
+def test_smartconnect_ups_detection() -> None:
+    summary = collector._build_detection_summary(
+        {
+            "rack_pdu_capabilities": exception(),
+            "rack_pdu_measurements": response([0xFFFF] * 6),
+            "legacy_ups_id": response([0xFFFF]),
+            "smt_status": response([0, 8194] + [0] * 21),
+            "smt_measurements": response([0, 4845] + [0xFFFF] * 24),
+        }
+    )
+    assert summary["detected_device_type"] == "smartconnect_ups"
+    assert summary["decision"] == "definitive"
+
+
 def test_smt_detection_requires_modbus_evidence() -> None:
     summary = collector._build_detection_summary(
         {

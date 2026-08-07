@@ -14,6 +14,19 @@ sys.modules[SPEC.name] = MODBUS_TEST
 SPEC.loader.exec_module(MODBUS_TEST)
 
 
+def test_smartconnect_ups_detection() -> None:
+    probes = {
+        "rack_pdu_capabilities": {"parsed": {"error": {"code": "modbus_exception", "exception_code": 2}}},
+        "rack_pdu_measurements": {"parsed": {"registers": [0xFFFF] * 6}},
+        "legacy_ups_id": {"parsed": {"registers": [0xFFFF]}},
+        "smt_status": {"parsed": {"registers": [0, 8194] + [0] * 21}},
+        "smt_measurements": {"parsed": {"registers": [0, 4845] + [0xFFFF] * 24}},
+    }
+    result = MODBUS_TEST.detect_device(probes)
+    assert result["detected_device_type"] == "smartconnect_ups"
+    assert result["decision"] == "definitive"
+
+
 def test_parse_modbus_registers() -> None:
     response = struct.pack(">HHHBBBH", 1, 0, 5, 1, 3, 2, 50)
     assert MODBUS_TEST.parse_response(response)["registers"] == [50]

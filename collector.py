@@ -40,6 +40,7 @@ FREQUENCY_TENTHS_THRESHOLD = 400
 IDLE_PROBE_ADDRESS = 0x0000
 IDLE_PROBE_COUNT = 1
 PACING_PROBE_SECONDS = 3
+POST_PACING_DELAY_SECONDS = 2
 EXTERNAL_TEMP_1_OID_CANDIDATES = (
     "1.3.6.1.4.1.318.1.1.25.1.2.1.6.1.1",
     "1.3.6.1.4.1.318.1.1.25.1.2.1.6.1",
@@ -138,6 +139,7 @@ def _classify_device_type(probes: Mapping[str, ProbeOutcome]) -> str | None:
     capabilities = probes["rack_pdu_capabilities"]
     measurements = probes["rack_pdu_measurements"]
     legacy = probes["legacy_ups_id"]
+    smt_status = probes["smt_status"]
     smt = probes["smt_measurements"]
     if (
         capabilities.kind == measurements.kind == ProbeKind.RESPONSE
@@ -158,6 +160,18 @@ def _classify_device_type(probes: Mapping[str, ProbeOutcome]) -> str | None:
         return "smt_ups"
     if legacy.kind == ProbeKind.RESPONSE and smt.unsupported:
         return "smart_ups"
+    legacy_sentinel = (
+        legacy.kind == ProbeKind.RESPONSE
+        and len(legacy.registers) > 0
+        and all(r == 0xFFFF for r in legacy.registers)
+    )
+    if (
+        smt.kind == ProbeKind.RESPONSE and any(r != 0xFFFF for r in smt.registers)
+        and smt_status.kind == ProbeKind.RESPONSE and any(r != 0 for r in smt_status.registers)
+        and capabilities.unsupported
+        and legacy_sentinel
+    ):
+        return "smartconnect_ups"
     return None
 
 
@@ -853,6 +867,7 @@ def collect_diagnostic_dump(
         for start, count in MODBUS_BLOCKS
     ] + [("probe", name, start, count) for name, start, count in MODBUS_PROBES]
     if pacing["ok"]:
+        time.sleep(POST_PACING_DELAY_SECONDS)
         delay_seconds = effective_delay_seconds
         connection = None
         if pacing["effective_mode"] == "session":
